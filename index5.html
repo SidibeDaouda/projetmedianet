@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>My Page</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/themes/default/jquery.mobile-1.1.0.min.css">
+    <script src="js/jquery.js"></script>
+    <script src="js/jquery.mobile-1.1.0.min.js"></script>
+    <script>
+        //Les traitements s'effectue une fois que le framework jquery est charge
+        $(document).ready(function() {
+            //On affecte au bouton un listener , c'est à dire qu'au click sur le 
+            //bouton on declanche l'envoi de donnee (login, password, action)
+            //vers le serveur web afin que celui ci recherche si le login
+            //existe dans la table User
+            $('#buttonlogin').click(function() {
+                envoidonnee();
+            })
+        });
+        //Cette fonction que l'on declanche au click sur le bouton
+        //va envoyer des données au format json au fichier create.php
+        //explication: une application qui fonctionne sur un telephone ne
+        //peut communiquer avec un application qui fonctionne sur un un 
+        //serveur web en php qu'avec un restfull web service.
+        //restfull web service:API reposant sur HTTP qui permet a deux 
+        //applications ecrit dans des langages différents de communiquer
+        //entre-elles via des données au format json ou xml
+        function envoidonnee() {
+            //ajax est une API javascript qui permet de faire des traitements
+            //asynchrone.
+            //asynchrone: lors du lancement d'un traitement avec ajax l'attente du 
+            //resultat n'empeche pas l'utilisateur de travailler.(experience utilisateur)
+            $.ajax({
+                url: 'create.php',
+                dataType: 'json',
+                type: 'post', //get, post, delete, put
+                contentType: 'application/json',
+                //On envoie au format json le login, le password et une information qui sera traite dans le fichier create.php pour
+                //determiner le traitement a faire
+                data: JSON.stringify({
+                    "login": $('#login').val(),
+                    "password": $('#password').val(),
+                    "action": "loginsection"
+                }),
+                processData: false,
+                //si les traitements se passent correctement les données
+                //sont renvoyes dans l'objet data et je les traite.
+                success: function(data, textStatus, jQxhr) {
+                    //On traite l'objet data pour le convertir en chaine json.
+                    var json = JSON.parse(JSON.stringify(data));
+                    // var chaine="";
+                    // for (var i = 0; i < json.length; i++) {
+                    //     chaine=chaine+json[i].login+" "+json[i].password+" "+json[i].existe;
+                    //     if (json[i].existe==1) {
+                    //         document.getElementById("details").style.display="block";
+                    //         document.getElementById("loginsection").style.display="none";
+                    //     }
+                    // }
+                    $('#response').html(JSON.stringify(data));
+                    if (json[0].existe == 1) {
+
+                        // je supprime le formulaire login
+                        $("#container").empty();
+                        // ça permet de construire l'interface dynamiquement 
+                        // on utilise la boucle ci-desous pour creer la chaine 
+                        $("#container").html("<p>ajouterphp</p>");
+                    } // contenu.html se trouve au même niveau dans l’arborescence.
+
+
+                },
+                error: function(jqXhr, textStatus, errorThrown) {
+                    console.log(errorThrown);
+                }
+            });
+        }
+    </script>
+</head>
+
+<body>
+
+    !-- Start of first page -->
+    <div data-role="page" id="foo">
+
+        <div data-role="header" data-position="fixed">
+            <h1>saisie du login</h1>
+        </div>
+        <!-- /header -->
+
+        <div data-role="content">
+            <div id="container">
+                <div data-role="fieldcontainer">
+                    <label for="login">login:</label>
+                    <input type="text" id="login" name="login">
+                </div>
+                <div data-role="fieldcontainer">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password">
+                </div>
+                <a href="#" data-role="button" data-icon="star" data-theme="a" id="buttonlogin">envoyer</a>
+                <p id="response"></p>
+            </div>
+
+        </div>
+        <!-- /content -->
+
+        <div data-role="footer" data-position="fixed">
+            <h4>Bas de page</h4>
+        </div>
+        <!-- /footer -->
+    </div>
+    <!-- /page -->
+
+
+
+
+</body>
+
+</html>
